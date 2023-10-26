@@ -22,6 +22,10 @@
 			audioContext = new window.AudioContext();
 			audioContextState = audioContext.state;
 			audioContextCurrentTime = audioContext.currentTime;
+			(function updateCurrentTime() {
+				audioContextCurrentTime = audioContext.currentTime;
+				requestAnimationFrame(updateCurrentTime);
+			})();
 		}
 	}
 
@@ -42,7 +46,6 @@
 			oscillatorNode.start();
 			audioContextState = audioContext.state;
 			makingNoise = true;
-			audioContextCurrentTime = audioContext.currentTime;
 		} else {
 			console.error('AudioContext not initialized');
 		}
