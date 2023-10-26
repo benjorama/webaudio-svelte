@@ -71,22 +71,10 @@
 	<!-- else content here -->
 	<p>AudioContext initialized</p>
 	<p>state: {audioContext.state}</p>
-	<p>listener: {audioContext.listener}</p>
-	<p>listener upX: {audioContext.listener.upX}</p>
-	<p>listener upY: {audioContext.listener.upY}</p>
-	<p>listener upZ: {audioContext.listener.upZ}</p>
-	<p>listener forwardX: {audioContext.listener.forwardX}</p>
-	<p>listener forwardY: {audioContext.listener.forwardY}</p>
-	<p>listener forwardZ: {audioContext.listener.forwardZ}</p>
-	<p>listener positionX: {audioContext.listener.positionX}</p>
-	<p>listener positionY: {audioContext.listener.positionY}</p>
-	<p>listener positionZ: {audioContext.listener.positionZ}</p>
 	<p>current time: {audioContextCurrentTime}</p>
 	<p>sample rate: {audioContext.sampleRate}</p>
 	<p>base latency: {audioContext.baseLatency}</p>
 	<p>output latency: {audioContext.outputLatency}</p>
-	<p>audio worklet: {audioContext.audioWorklet}</p>
-	<p>destination: {audioContext.destination}</p>
 	<p>destination channel interpretation: {audioContext.destination.channelInterpretation}</p>
 	<p>destination channel count mode: {audioContext.destination.channelCountMode}</p>
 	<p>destination channel count: {audioContext.destination.channelCount}</p>
@@ -100,14 +88,11 @@
 	<p>some noise!</p>
 	<p>OscillatorNode Info</p>
 	<p>type: {oscillatorNode.type}</p>
-	<p>detune: {oscillatorNode.detune}</p>
 	<p>detune value: {oscillatorNode.detune.value}</p>
 	<p>detune max value: {oscillatorNode.detune.maxValue}</p>
 	<p>detune min value: {oscillatorNode.detune.minValue}</p>
 	<p>detune default value: {oscillatorNode.detune.defaultValue}</p>
 	<p>detune automation rate: {oscillatorNode.detune.automationRate}</p>
-	<p>context: {oscillatorNode.context} basically same data from parent audioContext</p>
-	<p>frequency: {oscillatorNode.frequency}</p>
 	<p>frequency value: {oscillatorNode.frequency.value}</p>
 	<p>frequency automation rate: {oscillatorNode.frequency.automationRate}</p>
 	<p>frequency default value: {oscillatorNode.frequency.defaultValue}</p>
