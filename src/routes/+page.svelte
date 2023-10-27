@@ -8,6 +8,21 @@
 	/** @type {number} */
 	let audioContextCurrentTime;
 
+	/** @type {number} */
+	let sampleRate;
+
+	/** @type {number} */
+	let baseLatency;
+
+	/** @type {number} */
+	let outputLatency;
+
+	/** @type {number} */
+	let destNumOutputs;
+
+	/** @type {number} */
+	let destNumInputs;
+
 	/** @type {OscillatorNode} */
 	let oscillatorNode;
 
@@ -15,15 +30,24 @@
 	let gainNode;
 
 	/** @type {boolean} */
-	let makingNoise = false;
+	let makingNoise;
+
+	/** @type {boolean} */
+	let disabled;
 
 	function initAudioContext() {
 		if (!audioContext) {
 			audioContext = new window.AudioContext();
-			audioContextState = audioContext.state;
-			audioContextCurrentTime = audioContext.currentTime;
+			makingNoise = false;
+			disabled = false;
 			(function updateCurrentTime() {
 				audioContextCurrentTime = audioContext.currentTime;
+				audioContextState = audioContext.state;
+				sampleRate = audioContext.sampleRate;
+				baseLatency = audioContext.baseLatency;
+				outputLatency = audioContext.outputLatency;
+				destNumOutputs = audioContext.destination.numberOfOutputs;
+				destNumInputs = audioContext.destination.numberOfInputs;
 				requestAnimationFrame(updateCurrentTime);
 			})();
 		}
@@ -40,12 +64,11 @@
 		if (audioContext) {
 			oscillatorNode = audioContext.createOscillator();
 			gainNode = audioContext.createGain();
-
 			oscillatorNode.connect(gainNode);
-			gainNode.connect(audioContext.destination);
+			oscillatorNode.connect(audioContext.destination);
 			oscillatorNode.start();
-			audioContextState = audioContext.state;
 			makingNoise = true;
+			disabled = true;
 		} else {
 			console.error('AudioContext not initialized');
 		}
@@ -56,6 +79,7 @@
 			oscillatorNode.stop();
 			audioContextState = audioContext?.state;
 			makingNoise = false;
+			disabled = false;
 			audioContextCurrentTime = audioContext.currentTime;
 		}
 	}
@@ -65,42 +89,24 @@
 <button on:click={closeAudioContext}>OFF</button>
 
 {#if !audioContext}
-	<!-- content here -->
 	<p>AudioContext not initialized</p>
 {:else}
-	<!-- else content here -->
-	<p>AudioContext initialized</p>
-	<p>state: {audioContext.state}</p>
+	<div>
+		<button on:click={makeNoise} {disabled}>Make Noise</button>
+		{#if makingNoise}
+			<button on:click={stopNoise}>Stop Noise</button>
+			<p>type: {oscillatorNode.type}</p>
+			<p>frequency value: {oscillatorNode.frequency.value}</p>
+		{/if}
+	</div>
+	<p>state: {audioContextState}</p>
 	<p>current time: {audioContextCurrentTime}</p>
-	<p>sample rate: {audioContext.sampleRate}</p>
-	<p>base latency: {audioContext.baseLatency}</p>
-	<p>output latency: {audioContext.outputLatency}</p>
+	<p>sample rate: {sampleRate}</p>
+	<p>base latency: {baseLatency}</p>
+	<p>output latency: {outputLatency}</p>
 	<p>destination channel interpretation: {audioContext.destination.channelInterpretation}</p>
 	<p>destination channel count mode: {audioContext.destination.channelCountMode}</p>
 	<p>destination channel count: {audioContext.destination.channelCount}</p>
-	<p>destination number of outputs: {audioContext.destination.numberOfOutputs}</p>
-	<p>destination number of inputs: {audioContext.destination.numberOfInputs}</p>
-	<button on:click={makeNoise}>Make Noise</button>
-{/if}
-
-{#if makingNoise}
-	<button on:click={stopNoise}>Stop Noise</button>
-	<p>some noise!</p>
-	<p>OscillatorNode Info</p>
-	<p>type: {oscillatorNode.type}</p>
-	<p>detune value: {oscillatorNode.detune.value}</p>
-	<p>detune max value: {oscillatorNode.detune.maxValue}</p>
-	<p>detune min value: {oscillatorNode.detune.minValue}</p>
-	<p>detune default value: {oscillatorNode.detune.defaultValue}</p>
-	<p>detune automation rate: {oscillatorNode.detune.automationRate}</p>
-	<p>frequency value: {oscillatorNode.frequency.value}</p>
-	<p>frequency automation rate: {oscillatorNode.frequency.automationRate}</p>
-	<p>frequency default value: {oscillatorNode.frequency.defaultValue}</p>
-	<p>frequency min value: {oscillatorNode.frequency.minValue}</p>
-	<p>frequency max value: {oscillatorNode.frequency.maxValue}</p>
-	<p>channel count: {oscillatorNode.channelCount}</p>
-	<p>number of inputs: {oscillatorNode.numberOfInputs}</p>
-	<p>number of outputs: {oscillatorNode.numberOfOutputs}</p>
-	<p>channel count mode: {oscillatorNode.channelCountMode}</p>
-	<p>channel interpretation {oscillatorNode.channelInterpretation}</p>
+	<p>destination number of outputs: {destNumOutputs}</p>
+	<p>destination number of inputs: {destNumInputs}</p>
 {/if}
