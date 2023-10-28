@@ -29,6 +29,9 @@
 	/** @type {GainNode} */
 	let gainNode;
 
+	/** @type {StereoPannerNode} */
+	let stereoPannerNode;
+
 	/** @type {boolean} */
 	let makingNoise;
 
@@ -64,8 +67,14 @@
 		if (audioContext) {
 			oscillatorNode = audioContext.createOscillator();
 			gainNode = audioContext.createGain();
+			stereoPannerNode = audioContext.createStereoPanner();
+
 			oscillatorNode.connect(gainNode);
-			oscillatorNode.connect(audioContext.destination);
+			gainNode.connect(stereoPannerNode);
+			stereoPannerNode.connect(audioContext.destination);
+
+			gainNode.gain.value = 0.1;
+			stereoPannerNode.pan.value = 0.0;
 			oscillatorNode.start();
 			makingNoise = true;
 			disabled = true;
@@ -83,6 +92,32 @@
 			audioContextCurrentTime = audioContext.currentTime;
 		}
 	}
+
+	/**
+	 *@param {Event} event
+	 */
+	function adjustGain(event) {
+		if (event.currentTarget instanceof HTMLInputElement) {
+			console.log(event.currentTarget.value);
+			gainNode.gain.setValueAtTime(
+				parseFloat(event.currentTarget.value),
+				audioContextCurrentTime + 0.01
+			);
+		}
+	}
+
+	/**
+	 *@param {Event} event
+	 */
+	function adjustPan(event) {
+		if (event.currentTarget instanceof HTMLInputElement) {
+			console.log(event.currentTarget.value);
+			stereoPannerNode.pan.setValueAtTime(
+				parseFloat(event.currentTarget.value),
+				audioContextCurrentTime + 0.01
+			);
+		}
+	}
 </script>
 
 <button on:click={initAudioContext}>ON</button>
@@ -95,6 +130,32 @@
 		<button on:click={makeNoise} {disabled}>Make Noise</button>
 		{#if makingNoise}
 			<button on:click={stopNoise}>Stop Noise</button>
+			<div>
+				<input
+					on:input={adjustGain}
+					type="range"
+					id="volume"
+					name="volume"
+					min="0"
+					max="1"
+					step="0.01"
+					value="0.1"
+				/>
+				<label for="volume">Volume</label>
+			</div>
+			<div>
+				<input
+					on:input={adjustPan}
+					type="range"
+					id="pan"
+					name="pan"
+					min="-1"
+					max="1"
+					step="0.01"
+					value="0.0"
+				/>
+				<label for="pan">Pan</label>
+			</div>
 			<p>type: {oscillatorNode.type}</p>
 			<p>frequency value: {oscillatorNode.frequency.value}</p>
 		{/if}
