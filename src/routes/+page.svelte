@@ -179,9 +179,4 @@
 	<p>sample rate: {sampleRate}</p>
 	<p>base latency: {baseLatency}</p>
 	<p>output latency: {outputLatency}</p>
-	<p>destination channel interpretation: {audioContext.destination.channelInterpretation}</p>
-	<p>destination channel count mode: {audioContext.destination.channelCountMode}</p>
-	<p>destination channel count: {audioContext.destination.channelCount}</p>
-	<p>destination number of outputs: {destNumOutputs}</p>
-	<p>destination number of inputs: {destNumInputs}</p>
 {/if}
