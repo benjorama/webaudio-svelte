@@ -32,6 +32,9 @@
 	/** @type {StereoPannerNode} */
 	let stereoPannerNode;
 
+	/** @type {BiquadFilterNode} */
+	let biquadFilterNode;
+
 	/** @type {boolean} */
 	let makingNoise;
 
@@ -59,7 +62,7 @@
 	async function closeAudioContext() {
 		if (audioContext) {
 			await audioContext.close();
-			audioContext = undefined;
+			//audioContext = undefined;
 		}
 	}
 
@@ -68,10 +71,12 @@
 			oscillatorNode = audioContext.createOscillator();
 			gainNode = audioContext.createGain();
 			stereoPannerNode = audioContext.createStereoPanner();
+			biquadFilterNode = audioContext.createBiquadFilter();
 
 			oscillatorNode.connect(gainNode);
 			gainNode.connect(stereoPannerNode);
-			stereoPannerNode.connect(audioContext.destination);
+			stereoPannerNode.connect(biquadFilterNode);
+			biquadFilterNode.connect(audioContext.destination);
 
 			gainNode.gain.value = 0.1;
 			stereoPannerNode.pan.value = 0.0;
@@ -99,7 +104,6 @@
 	 */
 	function selectOscillator(event) {
 		let oscillatorInput = /**@type{HTMLSelectElement}*/ (event.currentTarget);
-		console.log(oscillatorInput.value);
 		oscillatorNode.type = /** @type {OscillatorType} */ (oscillatorInput.value);
 	}
 
@@ -117,6 +121,14 @@
 	function adjustPan(event) {
 		let panInput = /**@type {HTMLInputElement}*/ (event.currentTarget);
 		stereoPannerNode.pan.setValueAtTime(parseFloat(panInput.value), audioContextCurrentTime + 0.01);
+	}
+
+	/**
+	 *@param {Event} event
+	 */
+	function selectFilter(event) {
+		let filterInput = /**@type{HTMLSelectElement}*/ (event.currentTarget);
+		biquadFilterNode.type = /** @type {BiquadFilterType} */ (filterInput.value);
 	}
 </script>
 
@@ -170,6 +182,19 @@
 				<label for="pan">Pan</label>
 			</div>
 
+			<div>
+				<label for="filter-type">Select Filter</label>
+				<select on:change={selectFilter} name="filter-type" id="filter-type">
+					<option value="lowpass">lowpass</option>
+					<option value="highpass">highpass</option>
+					<option value="bandpass">bandpass</option>
+					<option value="lowshelf">lowshelf</option>
+					<option value="highshelf">highshelf</option>
+					<option value="peaking">peaking</option>
+					<option value="notch">notch</option>
+					<option value="allpass">allpass</option>
+				</select>
+			</div>
 			<p>type: {oscillatorNode.type}</p>
 			<p>frequency value: {oscillatorNode.frequency.value}</p>
 		{/if}
