@@ -75,6 +75,7 @@
 
 			gainNode.gain.value = 0.1;
 			stereoPannerNode.pan.value = 0.0;
+			oscillatorNode.type = 'sine';
 			oscillatorNode.start();
 			makingNoise = true;
 			disabled = true;
@@ -96,27 +97,26 @@
 	/**
 	 *@param {Event} event
 	 */
+	function selectOscillator(event) {
+		let oscillatorInput = /**@type{HTMLSelectElement}*/ (event.currentTarget);
+		console.log(oscillatorInput.value);
+		oscillatorNode.type = /** @type {OscillatorType} */ (oscillatorInput.value);
+	}
+
+	/**
+	 *@param {Event} event
+	 */
 	function adjustGain(event) {
-		if (event.currentTarget instanceof HTMLInputElement) {
-			console.log(event.currentTarget.value);
-			gainNode.gain.setValueAtTime(
-				parseFloat(event.currentTarget.value),
-				audioContextCurrentTime + 0.01
-			);
-		}
+		let gainInput = /**@type {HTMLInputElement}*/ (event.currentTarget);
+		gainNode.gain.setValueAtTime(parseFloat(gainInput.value), audioContextCurrentTime + 0.01);
 	}
 
 	/**
 	 *@param {Event} event
 	 */
 	function adjustPan(event) {
-		if (event.currentTarget instanceof HTMLInputElement) {
-			console.log(event.currentTarget.value);
-			stereoPannerNode.pan.setValueAtTime(
-				parseFloat(event.currentTarget.value),
-				audioContextCurrentTime + 0.01
-			);
-		}
+		let panInput = /**@type {HTMLInputElement}*/ (event.currentTarget);
+		stereoPannerNode.pan.setValueAtTime(parseFloat(panInput.value), audioContextCurrentTime + 0.01);
 	}
 </script>
 
@@ -128,8 +128,20 @@
 {:else}
 	<div>
 		<button on:click={makeNoise} {disabled}>Make Noise</button>
+
 		{#if makingNoise}
 			<button on:click={stopNoise}>Stop Noise</button>
+
+			<div>
+				<label for="osc-type">Select oscillator</label>
+				<select on:change={selectOscillator} name="osc-type" id="osc-type">
+					<option value="sine">sine</option>
+					<option value="square">square</option>
+					<option value="sawtooth">sawtooth</option>
+					<option value="triangle">triangle</option>
+				</select>
+			</div>
+
 			<div>
 				<input
 					on:input={adjustGain}
@@ -143,6 +155,7 @@
 				/>
 				<label for="volume">Volume</label>
 			</div>
+
 			<div>
 				<input
 					on:input={adjustPan}
@@ -156,6 +169,7 @@
 				/>
 				<label for="pan">Pan</label>
 			</div>
+
 			<p>type: {oscillatorNode.type}</p>
 			<p>frequency value: {oscillatorNode.frequency.value}</p>
 		{/if}
